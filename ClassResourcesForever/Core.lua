@@ -279,7 +279,7 @@ end
 
 local function BuildUI()
     root = CreateFrame("Frame", "ClassResourcesForeverFrame", UIParent, "BackdropTemplate")
-    root:SetSize(284, 86)
+    root:SetSize(284, 74)
     root:SetFrameStrata("MEDIUM")
     root:SetClampedToScreen(true)
     root:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", tile=true, tileSize=16, edgeSize=12, insets={left=3,right=3,top=3,bottom=3}})
@@ -289,13 +289,13 @@ local function BuildUI()
     root:SetScale(db.scale or 1)
 
     local classColor = profile.color or {0.7, 0.7, 0.7}
-    bars.primary = CreateResourceBar(root, profile.label, classColor, 18)
-    bars.primary:SetPoint("TOPLEFT", root, "TOPLEFT", 2, -2)
-    bars.mana = CreateResourceBar(root, "Mana", {0,0.44,0.87}, 14)
+    bars.primary = CreateResourceBar(root, profile.label, classColor, 18)\n    bars.primary:SetWidth(280)
+    bars.primary:SetPoint("TOPLEFT", root, "TOPLEFT", 0, 0)
+    bars.mana = CreateResourceBar(root, "Mana", {0,0.44,0.87}, 14)\n    bars.mana:SetWidth(280)
     bars.mana:SetPoint("TOPLEFT", bars.primary, "BOTTOMLEFT", 0, -3)
-    bars.combo = CreateResourceBar(root, "Combo points", {1,0.72,0.1}, 14)
+    bars.combo = CreateResourceBar(root, "Combo points", {1,0.72,0.1}, 14)\n    bars.combo:SetWidth(280)
     bars.combo:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -3)
-    bars.class = CreateResourceBar(root, "Class resource", {0.55,0.75,0.9}, 14)
+    bars.class = CreateResourceBar(root, "Class resource", {0.55,0.75,0.9}, 14)\n    bars.class:SetWidth(280)
     bars.class:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -3)
     bars.mana:Hide(); bars.combo:Hide(); bars.class:Hide()
 
@@ -305,6 +305,22 @@ local function BuildUI()
     root.title = title
     ApplyPosition()
     SetLocked(db.locked)
+end
+
+local function OpenOptions()
+    if root.options then root.options:SetShown(not root.options:IsShown()); return end
+    local p=CreateFrame("Frame",nil,UIParent,"BackdropTemplate")
+    p:SetSize(300,220); p:SetPoint("CENTER"); p:SetFrameStrata("DIALOG")
+    p:SetBackdrop({bgFile="Interface\\\\DialogFrame\\\\UI-DialogBox-Background",edgeFile="Interface\\\\DialogFrame\\\\UI-DialogBox-Border",tile=true,tileSize=32,edgeSize=32,insets={left=8,right=8,top=8,bottom=8}})
+    local title=p:CreateFontString(nil,"OVERLAY","GameFontNormalLarge"); title:SetPoint("TOP",0,-18); title:SetText(profile.label.." Resources")
+    local function checkbox(label,key,y)
+        local c=CreateFrame("CheckButton",nil,p,"InterfaceOptionsCheckButtonTemplate"); c:SetPoint("TOPLEFT",p,"TOPLEFT",24,y); c.Text:SetText(label); c:SetChecked(db[key])
+        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) end end)
+    end
+    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118)
+    local lock=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); lock:SetSize(100,24); lock:SetPoint("BOTTOMLEFT",p,"BOTTOMLEFT",24,22); lock:SetText("Unlock / Lock"); lock:SetScript("OnClick",function() SetLocked(not db.locked) end)
+    local close=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); close:SetSize(80,24); close:SetPoint("BOTTOMRIGHT",p,"BOTTOMRIGHT",-24,22); close:SetText("Close"); close:SetScript("OnClick",function() p:Hide() end)
+    root.options=p
 end
 
 local function ToggleOption(key)
@@ -317,7 +333,7 @@ end
 
 local function HandleSlash(message)
     message = (message or ""):lower():match("^%s*(.-)%s*$")
-    if message == "unlock" then SetLocked(false)
+    if message == "options" or message == "config" or message == "" then OpenOptions()\n    elseif message == "unlock" then SetLocked(false)
     elseif message == "lock" then SetLocked(true); SavePosition()
     elseif message == "combat" then ToggleOption("combatOnly")
     elseif message == "bars" then ToggleOption("powerHidden")
@@ -327,7 +343,7 @@ local function HandleSlash(message)
         if scale then db.scale=math.max(0.5, math.min(2, scale)); root:SetScale(db.scale) end
     elseif message == "reset" then db.position={point="CENTER",relativePoint="CENTER",x=0,y=-190}; ApplyPosition()
     else
-        print("|cff80c0ffClassResourcesForever:|r /cr unlock | lock | combat | bars | cooldowns | scale 0.5-2.0 | reset")
+        print("|cff80c0ffClassResourcesForever:|r /cr options | unlock | lock | combat | bars | cooldowns | scale 0.5-2.0 | reset")
     end
 end
 
