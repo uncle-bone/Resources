@@ -168,7 +168,7 @@ local function UpdateResources()
         local current, maximum = UnitHealth("player"), UnitHealthMax("player")
         if current ~= nil then bars.health:SetValue(current) end
         if not IsSecret(maximum) and type(maximum)=="number" and maximum>0 then bars.health:SetMinMaxValues(0,maximum) end
-        bars.health:SetShown(db.showHealth and not db.powerHidden)
+        bars.health:SetShown(db.showHealth)
     end
 
     -- Warlock shards are inventory reagents on this client, not assumed to be a power
@@ -305,7 +305,7 @@ local function UpdateVisibility()
 end
 
 local function BuildUI()
-    root = CreateFrame("Frame", "ClassResourcesForeverFrame", UIParent, "BackdropTemplate")
+    root = CreateFrame("Frame", nil, UIParent)
     root:SetSize(284, 74)
     root:SetFrameStrata("MEDIUM")
     root:SetClampedToScreen(true)
@@ -364,9 +364,9 @@ local function OpenOptions()
     local title=p:CreateFontString(nil,"OVERLAY","GameFontNormalLarge"); title:SetPoint("TOP",0,-18); title:SetText(profile.label.." Resources")
     local function checkbox(label,key,y)
         local c=CreateFrame("CheckButton",nil,p,"InterfaceOptionsCheckButtonTemplate"); c:SetPoint("TOPLEFT",p,"TOPLEFT",24,y); c.Text:SetText(label); c:SetChecked(db[key])
-        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end; LayoutBars() end)
+        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then UpdateResources() elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end; LayoutBars() end)
     end
-    checkbox("Show health bar","showHealth",-150); checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)
+    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)
     local arrange=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); arrange:SetSize(220,24); arrange:SetPoint("BOTTOM",p,"BOTTOM",0,52); arrange:SetText("Customize cooldown layout..."); arrange:SetScript("OnClick",OpenLayoutEditor)
     local lock=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); lock:SetSize(100,24); lock:SetPoint("BOTTOMLEFT",p,"BOTTOMLEFT",24,22); lock:SetText("Unlock / Lock"); lock:SetScript("OnClick",function() SetLocked(not db.locked) end)
     local close=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); close:SetSize(80,24); close:SetPoint("BOTTOMRIGHT",p,"BOTTOMRIGHT",-24,22); close:SetText("Close"); close:SetScript("OnClick",function() p:Hide() end)
