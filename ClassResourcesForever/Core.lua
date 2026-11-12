@@ -247,8 +247,8 @@ local function RefreshCooldowns()
     for _, entry in ipairs(ns.Racials or {}) do
         if PlayerKnowsSpell(entry.id) then entries[#entries + 1] = entry end
     end
-    local width, size, gap = 280, 32, 4
-    local columns = math.max(1, math.floor((width + gap) / (size + gap)))
+    local size, gap = db.iconSize or 32, db.iconSpacing or 4
+    local columns = db.iconColumns or 7
     for index, entry in ipairs(entries) do
         local icon = CreateCooldownIcon(entry)
         local row, col = math.floor((index - 1) / columns), (index - 1) % columns
@@ -316,17 +316,37 @@ local function BuildUI()
     SetLocked(db.locked)
 end
 
+local function OpenLayoutEditor()
+    if root.layoutEditor then root.layoutEditor:SetShown(not root.layoutEditor:IsShown()); return end
+    local w=CreateFrame("Frame",nil,UIParent,"BackdropTemplate"); w:SetSize(330,190); w:SetPoint("CENTER",root,"CENTER",340,0); w:SetFrameStrata("DIALOG")
+    w:SetBackdrop({bgFile="Interface\\\\DialogFrame\\\\UI-DialogBox-Background",edgeFile="Interface\\\\DialogFrame\\\\UI-DialogBox-Border",tile=true,tileSize=32,edgeSize=32,insets={left=8,right=8,top=8,bottom=8}})
+    local title=w:CreateFontString(nil,"OVERLAY","GameFontNormalLarge"); title:SetPoint("TOP",0,-18); title:SetText("Cooldown Layout")
+    local note=w:CreateFontString(nil,"OVERLAY","GameFontNormal"); note:SetPoint("TOP",title,"BOTTOM",0,-12); note:SetText("Choose icon size and slots per row.")
+    local function step(caption,key,delta,x)
+        local b=CreateFrame("Button",nil,w,"UIPanelButtonTemplate"); b:SetSize(54,24); b:SetPoint("TOP",w,"TOP",x,-86); b:SetText(caption)
+        b:SetScript("OnClick",function()
+            db[key]=math.max(key=="iconSize" and 20 or 3,math.min(key=="iconSize" and 64 or 12,(db[key] or (key=="iconSize" and 32 or 7))+delta))
+            RefreshCooldowns()
+        end)
+    end
+    local a=w:CreateFontString(nil,"OVERLAY","GameFontNormal"); a:SetPoint("TOP",w,"TOP",-80,-68); a:SetText("Icon size")
+    local b=w:CreateFontString(nil,"OVERLAY","GameFontNormal"); b:SetPoint("TOP",w,"TOP",80,-68); b:SetText("Slots per row")
+    step("-", "iconSize",-4,-80); step("+","iconSize",4,-30); step("-","iconColumns",-1,70); step("+","iconColumns",1,120)
+    local close=CreateFrame("Button",nil,w,"UIPanelButtonTemplate"); close:SetSize(80,24); close:SetPoint("BOTTOM",0,20); close:SetText("Done"); close:SetScript("OnClick",function() w:Hide() end)
+    root.layoutEditor=w
+end
+
 local function OpenOptions()
     if root.options then root.options:SetShown(not root.options:IsShown()); return end
     local p=CreateFrame("Frame",nil,UIParent,"BackdropTemplate")
-    p:SetSize(300,220); p:SetPoint("CENTER"); p:SetFrameStrata("DIALOG")
+    p:SetSize(300,250); p:SetPoint("CENTER"); p:SetFrameStrata("DIALOG")
     p:SetBackdrop({bgFile="Interface\\\\DialogFrame\\\\UI-DialogBox-Background",edgeFile="Interface\\\\DialogFrame\\\\UI-DialogBox-Border",tile=true,tileSize=32,edgeSize=32,insets={left=8,right=8,top=8,bottom=8}})
     local title=p:CreateFontString(nil,"OVERLAY","GameFontNormalLarge"); title:SetPoint("TOP",0,-18); title:SetText(profile.label.." Resources")
     local function checkbox(label,key,y)
         local c=CreateFrame("CheckButton",nil,p,"InterfaceOptionsCheckButtonTemplate"); c:SetPoint("TOPLEFT",p,"TOPLEFT",24,y); c.Text:SetText(label); c:SetChecked(db[key])
-        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) end end)
+        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end end)
     end
-    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118)
+    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)\n    local arrange=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); arrange:SetSize(220,24); arrange:SetPoint("BOTTOM",p,"BOTTOM",0,52); arrange:SetText("Customize cooldown layout..."); arrange:SetScript("OnClick",OpenLayoutEditor)
     local lock=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); lock:SetSize(100,24); lock:SetPoint("BOTTOMLEFT",p,"BOTTOMLEFT",24,22); lock:SetText("Unlock / Lock"); lock:SetScript("OnClick",function() SetLocked(not db.locked) end)
     local close=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); close:SetSize(80,24); close:SetPoint("BOTTOMRIGHT",p,"BOTTOMRIGHT",-24,22); close:SetText("Close"); close:SetScript("OnClick",function() p:Hide() end)
     root.options=p
