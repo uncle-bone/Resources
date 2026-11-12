@@ -6,6 +6,6 @@
 ## SavedVariables: ClassResourcesForeverDB, DruidResourcesDB, RogueResourcesDB
 
 ClassData.lua
-Modules\\ClassTracker.lua
+Modules\ClassTracker.lua
 Modules\Druid.lua
 Modules\Rogue.lua
