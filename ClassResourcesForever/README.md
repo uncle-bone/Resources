@@ -2,7 +2,7 @@
 
 One class-aware resource and cooldown addon for **World of Warcraft: Forever**. It detects the character's class at login and loads the matching tracker.
 
-**Install:** [ClassResourcesForever-0.1.0.zip](https://github.com/uncle-bone/Resources/raw/refs/heads/main/downloads/ClassResourcesForever-0.1.0.zip)
+**Install:** [ClassResourcesForever-0.1.1.zip](https://github.com/uncle-bone/Resources/raw/refs/heads/main/downloads/ClassResourcesForever-0.1.1.zip)
 
 ## Supported classes
 
@@ -39,7 +39,7 @@ Copy the `ClassResourcesForever` folder into `_forever_/Interface/AddOns/`, then
 
 ## Current build
 
-Version `0.1.0` is the initial unified build. The Druid and Rogue modules retain their existing feature sets. The other seven class profiles provide the shared power and cooldown framework with a first-pass list of class cooldown spells; their class-specific trackers will be expanded from in-game observations and the Forever class data. This source has not yet been validated in the live client.
+Version `0.1.1` includes the shared class spellbook lookup fix. The Druid and Rogue modules retain their existing feature sets. The other seven class profiles provide the shared power and cooldown framework with a first-pass list of class cooldown spells; their class-specific trackers will be expanded from in-game observations and the Forever class data. This source has not yet been validated in the live client.
 
 ## Attribution and license
 
