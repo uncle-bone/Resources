@@ -2856,7 +2856,9 @@ function CRFClass_UpdatePower(f)   -- forward-declared above (CRFClass_SetLocked
         if not IsSecretV(petMax) and type(petMax) == "number" and petMax > 0 then f.mana2:SetMinMaxValues(0, petMax) end
         f.mana2:SetValue(UnitPower("pet", focus))
         f.mana2Text:SetText("Pet Focus")
-    elseif currentClass == "HUNTER" then\n        f.mana2:Hide()\n    elseif currentClass == "WARLOCK" and C_Container and C_Container.GetContainerNumSlots then
+    elseif currentClass == "HUNTER" then
+        f.mana2:Hide()
+    elseif currentClass == "WARLOCK" and C_Container and C_Container.GetContainerNumSlots then
         local count = 0
         for bag = 0, 4 do for slot = 1, (C_Container.GetContainerNumSlots(bag) or 0) do
             local info = C_Container.GetContainerItemInfo(bag, slot)
@@ -3480,7 +3482,8 @@ ev:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4)
         L.casterForm = profile.label
         L.showPower = "Show " .. profile.label .. " resource bar"
         L.barPower = profile.label .. " resource"
-        L.showBuffs = "Show class buffs"\n        L.showCP = "Show secondary resource bar"
+        L.showBuffs = "Show class buffs"
+        L.showCP = "Show secondary resource bar"
         L.showMana2 = "Show secondary resource"
         L.panelDesc = profile.label .. " resources and cooldowns. Use |cffffd100/cr unlock|r to move bars and icons, or |cffffd100/cr options|r to configure the tracker."
         if profile.spells and profile.spells[1] then CAT_FALLBACK_ICON = SpellTex(profile.spells[1].id) or CAT_FALLBACK_ICON end
