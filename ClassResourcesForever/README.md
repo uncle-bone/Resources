@@ -2,6 +2,8 @@
 
 One class-aware resource and cooldown addon for **World of Warcraft: Forever**. It detects the character's class at login and loads the matching tracker.
 
+**Install:** [ClassResourcesForever-0.1.0.zip](https://github.com/uncle-bone/Resources/raw/refs/heads/main/downloads/ClassResourcesForever-0.1.0.zip)
+
 ## Supported classes
 
 - **Druid:** retains the Druid Resources form-aware bars, per-form cooldown layouts, Clearcasting alert, Mark of the Wild and Thorns timers, optional health display, Well Fed warning, and custom spell/item tracking.
