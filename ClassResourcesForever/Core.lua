@@ -151,6 +151,13 @@ local function UpdateResources()
         end
     end
 
+    if bars.health then
+        local current, maximum = UnitHealth("player"), UnitHealthMax("player")
+        if current ~= nil then bars.health:SetValue(current) end
+        if not IsSecret(maximum) and type(maximum)=="number" and maximum>0 then bars.health:SetMinMaxValues(0,maximum) end
+        bars.health:SetShown(db.showHealth and not db.powerHidden)
+    end
+
     -- Warlock shards are inventory reagents on this client, not assumed to be a power
     -- type. Count the classic soul-shard item without reading protected combat values.
     if playerClass == "WARLOCK" and C_Container and C_Container.GetContainerNumSlots
@@ -346,7 +353,7 @@ local function OpenOptions()
         local c=CreateFrame("CheckButton",nil,p,"InterfaceOptionsCheckButtonTemplate"); c:SetPoint("TOPLEFT",p,"TOPLEFT",24,y); c.Text:SetText(label); c:SetChecked(db[key])
         c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end end)
     end
-    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)
+    checkbox("Show health bar","showHealth",-150); checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)
     local arrange=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); arrange:SetSize(220,24); arrange:SetPoint("BOTTOM",p,"BOTTOM",0,52); arrange:SetText("Customize cooldown layout..."); arrange:SetScript("OnClick",OpenLayoutEditor)
     local lock=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); lock:SetSize(100,24); lock:SetPoint("BOTTOMLEFT",p,"BOTTOMLEFT",24,22); lock:SetText("Unlock / Lock"); lock:SetScript("OnClick",function() SetLocked(not db.locked) end)
     local close=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); close:SetSize(80,24); close:SetPoint("BOTTOMRIGHT",p,"BOTTOMRIGHT",-24,22); close:SetText("Close"); close:SetScript("OnClick",function() p:Hide() end)
@@ -409,6 +416,8 @@ RegisterEventSafe("PLAYER_LOGIN")
 RegisterEventSafe("PLAYER_LOGOUT")
 RegisterEventSafe("PLAYER_REGEN_DISABLED")
 RegisterEventSafe("PLAYER_REGEN_ENABLED")
+RegisterEventSafe("UNIT_HEALTH")
+RegisterEventSafe("UNIT_MAXHEALTH")
 RegisterEventSafe("UNIT_POWER_UPDATE")
 RegisterEventSafe("UNIT_POWER_FREQUENT")
 RegisterEventSafe("UNIT_HEALTH")
@@ -431,6 +440,7 @@ EVENT:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
         UpdateVisibility()
     elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then
         if bars.health then bars.health:SetMinMaxValues(0, UnitHealthMax("player")); bars.health:SetValue(UnitHealth("player")); bars.health.label:SetText("Health") end
+    elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then UpdateResources()
     elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
         if arg1 == "player" or arg1 == "pet" then UpdateResources() end
     elseif event == "UNIT_DISPLAYPOWER" or event == "UPDATE_SHAPESHIFT_FORM"
