@@ -378,7 +378,7 @@ end
 
 local function ToggleOption(key)
     db[key] = not db[key]
-    if key == "powerHidden" then bars.primary:SetShown(not db.powerHidden); bars.mana:SetShown(playerClass == "DRUID" and not db.powerHidden) end
+    if key == "powerHidden" then UpdateResources() end
     if key == "cooldownsHidden" then RefreshCooldowns() end
     if key == "combatOnly" then UpdateVisibility() end
     print("|cff80c0ffClassResourcesForever:|r " .. key .. " " .. (db[key] and "enabled" or "disabled"))
