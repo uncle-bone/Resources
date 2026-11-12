@@ -238,7 +238,7 @@ local function RefreshCooldowns()
         if PlayerKnowsSpell(entry.id) then entries[#entries + 1] = entry end
     end
     for _, entry in ipairs(ns.Racials or {}) do
-        if IsSpellKnown(entry.id) then entries[#entries + 1] = entry end
+        if PlayerKnowsSpell(entry.id) then entries[#entries + 1] = entry end
     end
     local width, size, gap = 220, 32, 4
     local columns = math.max(1, math.floor((width + gap) / (size + gap)))
