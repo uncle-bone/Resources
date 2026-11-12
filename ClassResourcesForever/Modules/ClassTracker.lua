@@ -57,28 +57,50 @@ local function PlayerKnowsSpell(spellID)
     return false
 end
 
+-- Bar sizing, outline, gloss, and status-bar construction repurposed from
+-- Konchius's DruidResources.lua (included with permission).
+local BAR_W = 200
+local BAR_TEX = "Interface\\TargetingFrame\\UI-StatusBar"
+
+local function Outline(region, host, thick)
+    thick = thick or 1
+    local t = host:CreateTexture(nil, "BACKGROUND", nil, -6)
+    t:SetColorTexture(0, 0, 0, 1)
+    t:SetPoint("TOPLEFT", region, "TOPLEFT", -thick, thick)
+    t:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", thick, -thick)
+    return t
+end
+
+local function Gloss(bar)
+    local g = bar:CreateTexture(nil, "ARTWORK", nil, 2)
+    g:SetColorTexture(1, 1, 1, 0.06)
+    g:SetBlendMode("ADD")
+    g:SetPoint("TOPLEFT", bar, "TOPLEFT", 1, -1)
+    g:SetPoint("BOTTOMRIGHT", bar, "TOPRIGHT", -1, -math.max(2, bar:GetHeight() * 0.5))
+    local hl = bar:CreateTexture(nil, "ARTWORK", nil, 3)
+    hl:SetColorTexture(1, 1, 1, 0.20)
+    hl:SetHeight(1)
+    hl:SetPoint("TOPLEFT", bar, "TOPLEFT", 1, -1)
+    hl:SetPoint("TOPRIGHT", bar, "TOPRIGHT", -1, -1)
+end
+
 local function CreateResourceBar(parent, label, color, height)
     local bar = CreateFrame("StatusBar", nil, parent)
-    bar:SetSize(280, height or 18)
-    bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    bar:SetSize(BAR_W, height or 16)
+    bar:SetStatusBarTexture(BAR_TEX)
+    bar:SetStatusBarColor(color[1], color[2], color[3])
     bar:SetMinMaxValues(0, 100)
     bar:SetValue(0)
-    bar:SetStatusBarColor(color[1], color[2], color[3], 1)
     local bg = bar:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints(bar)
-    bg:SetColorTexture(0.04, 0.05, 0.07, 0.72)
-    local edge = bar:CreateTexture(nil, "OVERLAY")
-    edge:SetPoint("TOPLEFT", bar, -1, 1); edge:SetPoint("BOTTOMRIGHT", bar, 1, -1)
-    edge:SetColorTexture(0.03, 0.03, 0.04, 0.9)
-    local gloss = bar:CreateTexture(nil, "ARTWORK")
-    gloss:SetPoint("TOPLEFT"); gloss:SetPoint("TOPRIGHT"); gloss:SetHeight(math.max(2, (height or 18) * 0.3))
-    gloss:SetColorTexture(1, 1, 1, 0.07)
-    bar:SetFrameLevel(parent:GetFrameLevel() + 1)
-    local text = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    bg:SetColorTexture(color[1] * 0.18, color[2] * 0.18, color[3] * 0.18, 0.55)
+    Outline(bar, bar, 2)
+    Gloss(bar)
+    local text = bar:CreateFontString(nil, "OVERLAY")
     text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
     text:SetPoint("CENTER", bar, "CENTER", 0, 0)
+    text:SetTextColor(1, 1, 1, 1)
     text:SetText(label)
-    text:SetJustifyH("LEFT")
     bar.label = text
     return bar
 end
@@ -270,7 +292,7 @@ local function RefreshCooldowns()
     for _, entry in ipairs(ns.Racials or {}) do
         if PlayerKnowsSpell(entry.id) then entries[#entries + 1] = entry end
     end
-    local size, gap = db.iconSize or 32, db.iconSpacing or 4
+    local size, gap = db.iconSize or 32, db.iconSpacing or 5
     local columns = db.iconColumns or 7
     for index, entry in ipairs(entries) do
         local icon = CreateCooldownIcon(entry)
@@ -309,7 +331,7 @@ end
 
 local function BuildUI()
     root = CreateFrame("Frame", nil, UIParent)
-    root:SetSize(284, 74)
+    root:SetSize(204, 74)
     root:SetFrameStrata("MEDIUM")
     root:SetClampedToScreen(true)
     root:SetScript("OnDragStart", function(self) if not db.locked then self:StartMoving() end end)
@@ -318,19 +340,19 @@ local function BuildUI()
 
     local classColor = profile.color or {0.7, 0.7, 0.7}
     bars.primary = CreateResourceBar(root, profile.label, classColor, 18)
-    bars.primary:SetWidth(280)
+    bars.primary:SetWidth(BAR_W)
     bars.primary:SetPoint("TOPLEFT", root, "TOPLEFT", 0, 0)
     bars.mana = CreateResourceBar(root, "Mana", {0,0.44,0.87}, 14)
-    bars.mana:SetWidth(280)
+    bars.mana:SetWidth(BAR_W)
     bars.mana:SetPoint("TOPLEFT", bars.primary, "BOTTOMLEFT", 0, -3)
     bars.combo = CreateResourceBar(root, "Combo points", {1,0.72,0.1}, 14)
-    bars.combo:SetWidth(280)
+    bars.combo:SetWidth(BAR_W)
     bars.combo:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -3)
     bars.class = CreateResourceBar(root, "Class resource", {0.55,0.75,0.9}, 14)
-    bars.class:SetWidth(280)
+    bars.class:SetWidth(BAR_W)
     bars.class:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -3)
     bars.health = CreateResourceBar(root, "Health", {0.18,0.78,0.22}, 14)
-    bars.health:SetWidth(280)
+    bars.health:SetWidth(BAR_W)
     bars.health:SetMinMaxValues(0, 1)
     bars.health:SetPoint("TOPLEFT", bars.primary, "BOTTOMLEFT", 0, -3)
     bars.mana:Hide(); bars.combo:Hide(); bars.class:Hide(); bars.health:SetShown(db.showHealth)
