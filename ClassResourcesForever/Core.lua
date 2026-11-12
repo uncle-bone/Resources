@@ -59,7 +59,7 @@ end
 
 local function CreateResourceBar(parent, label, color, height)
     local bar = CreateFrame("StatusBar", nil, parent)
-    bar:SetSize(220, height or 18)
+    bar:SetSize(280, height or 18)
     bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
     bar:SetMinMaxValues(0, 100)
     bar:SetValue(0)
@@ -240,7 +240,7 @@ local function RefreshCooldowns()
     for _, entry in ipairs(ns.Racials or {}) do
         if PlayerKnowsSpell(entry.id) then entries[#entries + 1] = entry end
     end
-    local width, size, gap = 220, 32, 4
+    local width, size, gap = 280, 32, 4
     local columns = math.max(1, math.floor((width + gap) / (size + gap)))
     for index, entry in ipairs(entries) do
         local icon = CreateCooldownIcon(entry)
@@ -279,7 +279,7 @@ end
 
 local function BuildUI()
     root = CreateFrame("Frame", "ClassResourcesForeverFrame", UIParent, "BackdropTemplate")
-    root:SetSize(220, 82)
+    root:SetSize(284, 86)
     root:SetFrameStrata("MEDIUM")
     root:SetClampedToScreen(true)
     root:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", tile=true, tileSize=16, edgeSize=12, insets={left=3,right=3,top=3,bottom=3}})
@@ -290,13 +290,13 @@ local function BuildUI()
 
     local classColor = profile.color or {0.7, 0.7, 0.7}
     bars.primary = CreateResourceBar(root, profile.label, classColor, 18)
-    bars.primary:SetPoint("TOPLEFT", root, "TOPLEFT", 8, -8)
+    bars.primary:SetPoint("TOPLEFT", root, "TOPLEFT", 2, -2)
     bars.mana = CreateResourceBar(root, "Mana", {0,0.44,0.87}, 14)
-    bars.mana:SetPoint("TOPLEFT", bars.primary, "BOTTOMLEFT", 0, -4)
+    bars.mana:SetPoint("TOPLEFT", bars.primary, "BOTTOMLEFT", 0, -3)
     bars.combo = CreateResourceBar(root, "Combo points", {1,0.72,0.1}, 14)
-    bars.combo:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -4)
+    bars.combo:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -3)
     bars.class = CreateResourceBar(root, "Class resource", {0.55,0.75,0.9}, 14)
-    bars.class:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -4)
+    bars.class:SetPoint("TOPLEFT", bars.mana, "BOTTOMLEFT", 0, -3)
     bars.mana:Hide(); bars.combo:Hide(); bars.class:Hide()
 
     local title = root:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
