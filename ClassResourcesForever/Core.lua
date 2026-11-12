@@ -346,7 +346,8 @@ local function OpenOptions()
         local c=CreateFrame("CheckButton",nil,p,"InterfaceOptionsCheckButtonTemplate"); c:SetPoint("TOPLEFT",p,"TOPLEFT",24,y); c.Text:SetText(label); c:SetChecked(db[key])
         c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end end)
     end
-    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)\n    local arrange=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); arrange:SetSize(220,24); arrange:SetPoint("BOTTOM",p,"BOTTOM",0,52); arrange:SetText("Customize cooldown layout..."); arrange:SetScript("OnClick",OpenLayoutEditor)
+    checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)
+    local arrange=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); arrange:SetSize(220,24); arrange:SetPoint("BOTTOM",p,"BOTTOM",0,52); arrange:SetText("Customize cooldown layout..."); arrange:SetScript("OnClick",OpenLayoutEditor)
     local lock=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); lock:SetSize(100,24); lock:SetPoint("BOTTOMLEFT",p,"BOTTOMLEFT",24,22); lock:SetText("Unlock / Lock"); lock:SetScript("OnClick",function() SetLocked(not db.locked) end)
     local close=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); close:SetSize(80,24); close:SetPoint("BOTTOMRIGHT",p,"BOTTOMRIGHT",-24,22); close:SetText("Close"); close:SetScript("OnClick",function() p:Hide() end)
     root.options=p
@@ -409,7 +410,9 @@ RegisterEventSafe("PLAYER_LOGOUT")
 RegisterEventSafe("PLAYER_REGEN_DISABLED")
 RegisterEventSafe("PLAYER_REGEN_ENABLED")
 RegisterEventSafe("UNIT_POWER_UPDATE")
-RegisterEventSafe("UNIT_POWER_FREQUENT")\nRegisterEventSafe("UNIT_HEALTH")\nRegisterEventSafe("UNIT_MAXHEALTH")
+RegisterEventSafe("UNIT_POWER_FREQUENT")
+RegisterEventSafe("UNIT_HEALTH")
+RegisterEventSafe("UNIT_MAXHEALTH")
 RegisterEventSafe("UNIT_DISPLAYPOWER")
 RegisterEventSafe("UPDATE_SHAPESHIFT_FORM")
 RegisterEventSafe("PLAYER_TARGET_CHANGED")
@@ -426,7 +429,9 @@ EVENT:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
     if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_ENABLED" then
         inCombat = event == "PLAYER_REGEN_DISABLED"
         UpdateVisibility()
-    elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then\n        if bars.health then bars.health:SetMinMaxValues(0, UnitHealthMax("player")); bars.health:SetValue(UnitHealth("player")); bars.health.label:SetText("Health") end\n    elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
+    elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then
+        if bars.health then bars.health:SetMinMaxValues(0, UnitHealthMax("player")); bars.health:SetValue(UnitHealth("player")); bars.health.label:SetText("Health") end
+    elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
         if arg1 == "player" or arg1 == "pet" then UpdateResources() end
     elseif event == "UNIT_DISPLAYPOWER" or event == "UPDATE_SHAPESHIFT_FORM"
         or event == "PLAYER_TARGET_CHANGED" then
