@@ -1064,7 +1064,7 @@ end
 
 -- Whether a bar is turned on in the options (it may still be hidden by your form).
 local function BarShown(k)
-    if currentClass ~= "DRUID" and (k == "cp" or k == "mana") then return false end
+    if currentClass ~= "DRUID" and k == "cp" then return false end
     if k == "health" then return db.healthShown and true or false end
     if k == "power" then return not db.powerHidden end
     if k == "mana" then if currentClass == "HUNTER" or currentClass == "WARLOCK" then return true end; return currentClass == "DRUID" and not db.mana2Hidden end
@@ -2988,7 +2988,7 @@ function CRFClass_ApplyBarVisibility(f)   -- forward-declared above (the options
     local bars = { cp = f.cp, power = f.power, mana = f.mana2, health = f.health }
     local applies = {
         cp = CurrentForm() == "cat",
-        power = ActivePowerType() ~= POWER_MANA,
+        power = currentClass ~= "DRUID" or ActivePowerType() ~= POWER_MANA,
         mana = true,
         health = true,
     }

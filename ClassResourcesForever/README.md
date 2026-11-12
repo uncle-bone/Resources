@@ -2,7 +2,7 @@
 
 One class-aware addon for **World of Warcraft: Forever**. It selects a tracker for the player's class.
 
-**Install:** [ClassResourcesForever-0.3.1.zip](https://github.com/uncle-bone/Resources/raw/refs/heads/main/downloads/ClassResourcesForever-0.3.1.zip)
+**Install:** [ClassResourcesForever-0.3.2.zip](https://github.com/uncle-bone/Resources/raw/refs/heads/main/downloads/ClassResourcesForever-0.3.2.zip)
 
 ## Trackers
 
