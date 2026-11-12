@@ -385,7 +385,7 @@ RegisterEventSafe("PLAYER_LOGOUT")
 RegisterEventSafe("PLAYER_REGEN_DISABLED")
 RegisterEventSafe("PLAYER_REGEN_ENABLED")
 RegisterEventSafe("UNIT_POWER_UPDATE")
-RegisterEventSafe("UNIT_POWER_FREQUENT")
+RegisterEventSafe("UNIT_POWER_FREQUENT")\nRegisterEventSafe("UNIT_HEALTH")\nRegisterEventSafe("UNIT_MAXHEALTH")
 RegisterEventSafe("UNIT_DISPLAYPOWER")
 RegisterEventSafe("UPDATE_SHAPESHIFT_FORM")
 RegisterEventSafe("PLAYER_TARGET_CHANGED")
@@ -402,7 +402,7 @@ EVENT:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
     if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_ENABLED" then
         inCombat = event == "PLAYER_REGEN_DISABLED"
         UpdateVisibility()
-    elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
+    elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then\n        if bars.health then bars.health:SetMinMaxValues(0, UnitHealthMax("player")); bars.health:SetValue(UnitHealth("player")); bars.health.label:SetText("Health") end\n    elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
         if arg1 == "player" or arg1 == "pet" then UpdateResources() end
     elseif event == "UNIT_DISPLAYPOWER" or event == "UPDATE_SHAPESHIFT_FORM"
         or event == "PLAYER_TARGET_CHANGED" then
