@@ -455,8 +455,7 @@ EVENT:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
         inCombat = event == "PLAYER_REGEN_DISABLED"
         UpdateVisibility()
     elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then
-        if bars.health then bars.health:SetMinMaxValues(0, UnitHealthMax("player")); bars.health:SetValue(UnitHealth("player")); bars.health.label:SetText("Health") end
-    elseif event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" then UpdateResources()
+        if arg1 == "player" then UpdateResources() end
     elseif event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" then
         if arg1 == "player" or arg1 == "pet" then UpdateResources() end
     elseif event == "UNIT_DISPLAYPOWER" or event == "UPDATE_SHAPESHIFT_FORM"
