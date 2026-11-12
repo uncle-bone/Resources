@@ -1,0 +1,21 @@
+Copyright (c) 2026 Konchius. All rights reserved.
+
+Druid Resources and all of its source code, assets and documentation are the
+property of the author.
+
+You may download and use this addon for your own personal use in World of
+Warcraft. No other rights are granted. Without the author's prior written
+permission, you may not copy, modify, merge, publish, distribute, sublicense,
+sell, or create derivative works from this software or any part of it,
+including reusing its code in other addons.
+
+Versions released before this notice were published under the MIT License and
+remain available under those terms. This notice applies to this version and
+all later versions.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

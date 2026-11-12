@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: Druid Resources
+## Notes: Form-aware mana, rage, energy, combo points and cooldowns for Druids
+## Author: Konchius
+## Version: 1.1.3
+## X-Curse-Project-ID: 1720699
+## SavedVariables: DruidResourcesDB
+
+DruidResources.lua
