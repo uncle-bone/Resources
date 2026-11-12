@@ -122,6 +122,19 @@ local function CurrentForm()
     return "other"
 end
 
+local function LayoutBars()
+    if not root then return end
+    local y=-2; local count=0
+    for _,key in ipairs({"primary","mana","combo","class","health"}) do
+        local b=bars[key]
+        if b and b:IsShown() then
+            b:ClearAllPoints(); b:SetPoint("TOPLEFT",root,"TOPLEFT",2,y)
+            y=y-(b:GetHeight()+3); count=count+1
+        end
+    end
+    root:SetHeight(math.max(24, math.abs(y)+2))
+end
+
 local function UpdateResources()
     if not root then return end
     local currentType = UnitPowerType("player")
@@ -351,7 +364,7 @@ local function OpenOptions()
     local title=p:CreateFontString(nil,"OVERLAY","GameFontNormalLarge"); title:SetPoint("TOP",0,-18); title:SetText(profile.label.." Resources")
     local function checkbox(label,key,y)
         local c=CreateFrame("CheckButton",nil,p,"InterfaceOptionsCheckButtonTemplate"); c:SetPoint("TOPLEFT",p,"TOPLEFT",24,y); c.Text:SetText(label); c:SetChecked(db[key])
-        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end end)
+        c:SetScript("OnClick",function(self) db[key]=self:GetChecked(); if key=="cooldownsHidden" then RefreshCooldowns() elseif key=="combatOnly" then UpdateVisibility() elseif key=="powerHidden" then bars.primary:SetShown(not db.powerHidden) elseif key=="showHealth" and bars.health then bars.health:SetShown(db.showHealth) end; LayoutBars() end)
     end
     checkbox("Show health bar","showHealth",-150); checkbox("Show only in combat","combatOnly",-54); checkbox("Hide resource bars","powerHidden",-86); checkbox("Hide cooldown icons","cooldownsHidden",-118); checkbox("Show health bar","showHealth",-150)
     local arrange=CreateFrame("Button",nil,p,"UIPanelButtonTemplate"); arrange:SetSize(220,24); arrange:SetPoint("BOTTOM",p,"BOTTOM",0,52); arrange:SetText("Customize cooldown layout..."); arrange:SetScript("OnClick",OpenLayoutEditor)
