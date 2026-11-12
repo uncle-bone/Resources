@@ -36,7 +36,7 @@ local function SpellTexture(spellID)
     end
 end
 
-local function IsSpellKnown(spellID)
+local function PlayerKnowsSpell(spellID)
     if C_SpellBook and type(C_SpellBook.IsSpellKnown) == "function" then
         local bank = Enum and Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player
         local ok, known = pcall(C_SpellBook.IsSpellKnown, spellID, bank)
@@ -235,7 +235,7 @@ local function RefreshCooldowns()
     if db.cooldownsHidden then return end
     local entries = {}
     for _, entry in ipairs(profile.spells or {}) do
-        if IsSpellKnown(entry.id) then entries[#entries + 1] = entry end
+        if PlayerKnowsSpell(entry.id) then entries[#entries + 1] = entry end
     end
     for _, entry in ipairs(ns.Racials or {}) do
         if IsSpellKnown(entry.id) then entries[#entries + 1] = entry end
