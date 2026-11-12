@@ -200,7 +200,7 @@ local function UpdateResources()
     else
         bars.class:Hide()
     end
-
+    LayoutBars()
 end
 
 local function StartCooldown(icon, entry)
