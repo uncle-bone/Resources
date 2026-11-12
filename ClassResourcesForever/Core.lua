@@ -200,6 +200,9 @@ local function UpdateResources()
     else
         bars.class:Hide()
     end
+    if db.powerHidden then
+        bars.primary:Hide(); bars.mana:Hide(); bars.combo:Hide(); bars.class:Hide()
+    end
     LayoutBars()
 end
 
