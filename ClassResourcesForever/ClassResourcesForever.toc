@@ -2,7 +2,7 @@
 ## Title: Class Resources Forever
 ## Notes: Class-aware resource bars and cooldown tracking for WoW Forever
 ## Author: Uncle Bone; Druid and Rogue modules by Konchius, used with permission
-## Version: 0.2.0
+## Version: 0.3.0
 ## SavedVariables: ClassResourcesForeverDB, DruidResourcesDB, RogueResourcesDB
 
 ClassData.lua
