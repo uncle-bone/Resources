@@ -1532,6 +1532,13 @@ local function PopulateOptions(f, body)
         LayoutIcons(f)
     end)
 
+    view.procEnabledCheck = AddCheck("Show proc alerts", function(self)
+        CRFProcAlerts_SetEnabled(self:GetChecked())
+    end)
+    view.procMoveCheck = AddCheck("Unlock proc icons to move", function(self)
+        CRFProcAlerts_SetUnlocked(self:GetChecked())
+    end)
+
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
     -- each row it passes over (the list and the bars on screen update as you go).
     -- Labels are filled in CRFRogue_RefreshOptions.
@@ -1827,6 +1834,14 @@ function CRFRogue_RefreshOptions(f)
         if view.poisonCheck then view.poisonCheck:SetChecked(not RogueResourcesDB.poisonHidden) end
         if view.energyCheck then view.energyCheck:SetChecked(not RogueResourcesDB.energyHidden) end
         if view.cpCheck then view.cpCheck:SetChecked(not RogueResourcesDB.cpHidden) end
+        if view.procEnabledCheck then
+            local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
+            view.procEnabledCheck:SetChecked(not procDB or procDB.enabled ~= false)
+        end
+        if view.procMoveCheck then
+            local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
+            view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
+        end
         if view.healthCheck then view.healthCheck:SetChecked(RogueResourcesDB.healthShown and true or false) end
         if view.cooldownsCheck then view.cooldownsCheck:SetChecked(not RogueResourcesDB.cooldownsHidden) end
         if view.orderRows then
