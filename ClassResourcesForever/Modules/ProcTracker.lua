@@ -143,8 +143,9 @@ function CRFProcAlerts_SetEnabled(enabled)
 end
 
 function CRFProcAlerts_SetUnlocked(unlocked)
-    if not frame then return end
-    SetUnlocked(unlocked)
+    EnsureDB()
+    db.unlocked = unlocked and true or false
+    if frame then SetUnlocked(unlocked) end
 end
 
 local ev = CreateFrame("Frame")
