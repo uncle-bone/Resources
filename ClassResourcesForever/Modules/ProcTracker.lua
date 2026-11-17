@@ -1,7 +1,7 @@
 -- ClassResourcesForever: compact, movable proc-aura alerts shared by all classes.
 local _, ns = ...
 local frame, db, icons = nil, nil, {}
-local SIZE, GAP = 36, 4
+local SIZE, GAP = 32, 5
 local function Secret(v) return issecretvalue and issecretvalue(v) end
 local function Texture(id)
     if C_Spell and C_Spell.GetSpellTexture then
@@ -29,13 +29,13 @@ local function CreateIcon(parent, entry)
     local b = CreateFrame("Frame", nil, parent)
     b:SetSize(SIZE, SIZE)
     b.texture = b:CreateTexture(nil, "ARTWORK")
-    b.texture:SetAllPoints()
+    b.texture:SetAllPoints(b)
+    b.texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
     b.texture:SetTexture(Texture(entry.id))
-    b.border = b:CreateTexture(nil, "OVERLAY")
-    b.border:SetPoint("TOPLEFT", b, "TOPLEFT", -2, 2)
-    b.border:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 2, -2)
-    b.border:SetColorTexture(0.15, 0.75, 1, 0.9)
-    b.border:SetDrawLayer("BACKGROUND")
+    b.border = b:CreateTexture(nil, "BACKGROUND")
+    b.border:SetPoint("TOPLEFT", b, "TOPLEFT", -1, 1)
+    b.border:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 1, -1)
+    b.border:SetColorTexture(0, 0, 0, 1)
     b.cooldown = CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate")
     b.cooldown:SetAllPoints()
     b.count = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -45,7 +45,11 @@ local function CreateIcon(parent, entry)
     b:EnableMouse(true)
     b:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:SetText(self.entry.label or SpellName(self.entry.id))
+        if GameTooltip.SetSpellByID then
+            GameTooltip:SetSpellByID(self.entry.id)
+        else
+            GameTooltip:SetText(self.entry.label or SpellName(self.entry.id))
+        end
         if self.expiration and not Secret(self.expiration) then
             local left = self.expiration - GetTime()
             if left > 0 then GameTooltip:AddLine(string.format("%.1f sec", left), 0.7, 0.9, 1) end
@@ -78,7 +82,7 @@ local function Update()
     for _, icon in ipairs(icons) do
         local aura = active[icon.entry.id]
         local visible = aura ~= nil
-        if visible or db.unlocked then
+        if db.enabled and (visible or db.unlocked) then
             shown = shown + 1
             icon:ClearAllPoints()
             icon:SetPoint("LEFT", frame, "LEFT", (shown - 1) * (SIZE + GAP), 0)
@@ -99,12 +103,13 @@ local function Update()
                 icon.cooldown:Hide()
             end
         end
-        icon:SetShown(visible or db.unlocked)
+        icon:SetShown(db.enabled and (visible or db.unlocked))
     end
     frame:SetWidth(math.max(SIZE, shown * SIZE + math.max(0, shown - 1) * GAP))
-    frame:SetShown(shown > 0)
+    frame:SetShown(db.enabled and shown > 0)
 end
 local function SetUnlocked(unlocked)
+    if not db then return end
     db.unlocked = unlocked and true or false
     if db.unlocked then
         frame:EnableMouse(true)
@@ -115,15 +120,33 @@ local function SetUnlocked(unlocked)
             local point, _, relativePoint, x, y = self:GetPoint()
             db.position = { point = point, relativePoint = relativePoint, x = x, y = y }
         end)
-        print("|cff00ff88ClassResourcesForever:|r proc icons unlocked; drag them into place.")
+        -- Options panel also exposes this toggle, so no slash command is needed.
     else
         frame:SetScript("OnDragStart", nil)
         frame:SetScript("OnDragStop", nil)
         frame:EnableMouse(false)
-        print("|cff00ff88ClassResourcesForever:|r proc icons locked.")
+        -- Options panel also exposes this toggle, so no slash command is needed.
     end
     Update()
 end
+local function EnsureDB()
+    ClassResourcesForeverDB = type(ClassResourcesForeverDB) == "table" and ClassResourcesForeverDB or {}
+    db = ClassResourcesForeverDB.procAlerts
+    if type(db) ~= "table" then db = {}; ClassResourcesForeverDB.procAlerts = db end
+    if db.enabled == nil then db.enabled = true end
+end
+
+function CRFProcAlerts_SetEnabled(enabled)
+    EnsureDB()
+    db.enabled = enabled and true or false
+    Update()
+end
+
+function CRFProcAlerts_SetUnlocked(unlocked)
+    if not frame then return end
+    SetUnlocked(unlocked)
+end
+
 local ev = CreateFrame("Frame")
 ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("UNIT_AURA")
@@ -133,9 +156,7 @@ ev:SetScript("OnEvent", function(_, event, unit)
         local _, class = UnitClass("player")
         local entries = ns.ProcAuras and ns.ProcAuras[class]
         if not entries then return end
-        ClassResourcesForeverDB = type(ClassResourcesForeverDB) == "table" and ClassResourcesForeverDB or {}
-        db = ClassResourcesForeverDB.procAlerts
-        if type(db) ~= "table" then db = {}; ClassResourcesForeverDB.procAlerts = db end
+        EnsureDB()
         frame = CreateFrame("Frame", "ClassResourcesForeverProcAlerts", UIParent)
         frame:SetSize(SIZE, SIZE)
         frame:SetFrameStrata("HIGH")
