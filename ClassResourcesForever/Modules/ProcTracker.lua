@@ -52,6 +52,16 @@ local function CreateIcon(parent, entry)
         GameTooltip:Show()
     end)
     b:SetScript("OnLeave", GameTooltip_Hide)
+    b:SetScript("OnMouseDown", function(self, button)
+        if db and db.unlocked and button == "LeftButton" then parent:StartMoving() end
+    end)
+    b:SetScript("OnMouseUp", function(self, button)
+        if db and db.unlocked and button == "LeftButton" then
+            parent:StopMovingOrSizing()
+            local point, _, relativePoint, x, y = parent:GetPoint()
+            db.position = { point = point, relativePoint = relativePoint, x = x, y = y }
+        end
+    end)
     return b
 end
 local function Update()
