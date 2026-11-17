@@ -1204,6 +1204,13 @@ local function PopulateOptions(f, body)
         CRFClass_UpdateHealth(f)
     end)
 
+    view.procEnabledCheck = AddCheck("Show proc alerts", function(self)
+        CRFProcAlerts_SetEnabled(self:GetChecked())
+    end)
+    view.procMoveCheck = AddCheck("Unlock proc icons to move", function(self)
+        CRFProcAlerts_SetUnlocked(self:GetChecked())
+    end)
+
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
     -- each row it passes over (the list and the bars on screen update as you go).
     -- Labels are filled in CRFClass_RefreshOptions.
@@ -1483,6 +1490,14 @@ function CRFClass_RefreshOptions(f)
         if view.cpCheck then view.cpCheck:SetChecked(not db.cpHidden) end
         if view.powerCheck then view.powerCheck:SetChecked(not db.powerHidden) end
         if view.mana2Check then view.mana2Check:SetChecked(not db.mana2Hidden) end
+        if view.procEnabledCheck then
+            local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
+            view.procEnabledCheck:SetChecked(not procDB or procDB.enabled ~= false)
+        end
+        if view.procMoveCheck then
+            local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
+            view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
+        end
         if view.healthCheck then view.healthCheck:SetChecked(db.healthShown and true or false) end
         if view.buffsCheck then view.buffsCheck:SetChecked(not db.buffsHidden) end
         if view.orderRows then
