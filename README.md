@@ -4,8 +4,8 @@ WoW Forever addon projects and research maintained by Uncle Bone.
 
 ## ClassResourcesForever
 
-A class-aware resource and cooldown addon. The seven non-Druid/Rogue classes use a repurposed copy of the permitted DruidResources tracker code; Druid and Rogue retain their original imported modules.
+A class-aware resource, cooldown, and proc alert addon. The seven non-Druid/Rogue classes use a repurposed copy of the permitted DruidResources tracker code; Druid and Rogue retain their original imported modules.
 
-**Download:** [ClassResourcesForever-0.3.2.zip](https://github.com/uncle-bone/Resources/raw/refs/heads/main/downloads/ClassResourcesForever-0.3.2.zip)
+**Download source archive:** [Resources main ZIP](https://github.com/uncle-bone/Resources/archive/refs/heads/main.zip) — install the `ClassResourcesForever/` folder inside the archive.
 
-See [ClassResourcesForever/README.md](ClassResourcesForever/README.md) for features and install instructions.
+See [ClassResourcesForever/README.md](ClassResourcesForever/README.md) for features, proc coverage, and install instructions.
