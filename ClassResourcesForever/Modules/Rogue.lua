@@ -2876,7 +2876,7 @@ local function BuildUI()
         if db.moveTogether then
             self._moveTogetherStartX, self._moveTogetherStartY = self:GetCenter()
             self._moveTogetherPositions = {}
-            local members = { f.ccFrame, f.buffFrame, f.wellFed }, f.poisonFrame, f.ripFrame }
+            local members = { f.poisonFrame, f.ripFrame, f.wellFed }
             for _, member in ipairs(members) do
                 if member then
                     local p, rel, rp, x, y = member:GetPoint()
