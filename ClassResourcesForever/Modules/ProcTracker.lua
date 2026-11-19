@@ -146,9 +146,13 @@ function CRFProcAlerts_SavePosition()
 end
 function CRFProcAlerts_SetGrouped(grouped)
     groupMove = grouped and true or false
-    if frame then
-        frame:EnableMouse(db and db.unlocked and not groupMove)
-        if groupMove then frame:SetScript("OnDragStart", nil); frame:SetScript("OnDragStop", nil) end
+    if frame and db then
+        SetUnlocked(db.unlocked)
+        if groupMove then
+            frame:EnableMouse(false)
+            frame:SetScript("OnDragStart", nil)
+            frame:SetScript("OnDragStop", nil)
+        end
     end
 end
 function CRFProcAlerts_SetEnabled(enabled)
