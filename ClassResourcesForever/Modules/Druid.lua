@@ -1243,7 +1243,7 @@ local function PopulateOptions(f, body)
     view.moveTogetherCheck = AddCheck("Move everything together", function(self)
         DruidResourcesDB.moveTogether = self:GetChecked() and true or false
         if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(DruidResourcesDB.moveTogether) end
-        CRFClass_SetLocked(f, db.locked)
+        CRFDruid_SetLocked(f, DruidResourcesDB.locked)
     end)
     view.procMoveCheck = AddCheck("Unlock proc icons to move", function(self)
         if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(false) end
