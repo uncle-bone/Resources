@@ -13,12 +13,18 @@ One class-aware addon for **World of Warcraft: Forever**. It selects a tracker f
 
 The other-class module is adapted directly from the permitted DruidResources code. Its SavedVariables are stored per class under ClassResourcesForeverDB. The actual Druid and Rogue modules retain their separate settings and slash commands.
 
+## Blizzard Cooldown Manager mode
+
+Each class tracker has an optional **Use Blizzard Cooldown Manager** setting. When enabled, ClassResourcesForever hides its own cooldown icon row while keeping its resource bars and proc alerts. Use the game's `/cdm` settings to select spells and Edit Mode to position Blizzard's bars.
+
+The mode does not automatically import ClassResourcesForever's cooldown list. WoW Forever's 1.60.1.70959 UI source exposes no public addon API for adding spells to the manager; the APIs that query or write cooldown entries require untainted calls. The default ClassResourcesForever cooldown row remains available when the setting is off.
+
 ## Compatibility and validation
 
 - WoW Forever interface `16001`.
 - Resource values pass directly to status bars; secret values are not formatted.
 - Proc aura IDs come from current WoW: Forever spell data. Aura visibility and API restrictions still need live-client verification. Some passives are hidden scripts or spell-usability states and cannot be detected by this aura-only tracker; those are called out in ProcCatalog.md.
-- The proc alert settings, hover tooltips, and icon layout have not yet been exercised in the live WoW Forever client. The class cooldown lists and proc alerts should be checked in game before treating every entry as confirmed.
+- The proc alert settings, hover tooltips, and icon layout have not yet been exercised in the live WoW Forever client. The native Cooldown Manager mode and class cooldown lists should be checked in game before treating every entry as confirmed.
 
 ## Commands
 
