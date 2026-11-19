@@ -388,6 +388,7 @@ RR.defaults = {
     healthShown   = false, -- show the (optional) health bar
     buffsHidden   = false, -- hide the Mark of the Wild / Thorns icons
     buffPos       = { point = "CENTER", relativePoint = "CENTER", x = -150, y = -170 },
+    useBlizzardCooldownManager = false, -- use Blizzard's Cooldown Manager instead of this addon's cooldown row
     barOrder      = { "cp", "power", "mana", "health" },   -- bar stacking order, top to bottom
     combatOnly    = false, -- show the bars + icons only while in combat
     wellFedWarn   = false, -- show a warning when the Well Fed food buff is missing
@@ -977,6 +978,7 @@ local function LayoutIcons(f)
             end
         end
     end
+    if db.useBlizzardCooldownManager then return end
     local form = CurrentForm()
     local lay = db.layoutByForm and db.layoutByForm[form]
 
@@ -1203,6 +1205,18 @@ local function PopulateOptions(f, body)
         CRFClass_ApplyBarVisibility(f)
         CRFClass_UpdateHealth(f)
     end)
+
+    view.nativeCooldownCheck = AddCheck("Use Blizzard Cooldown Manager", function(self)
+        db.useBlizzardCooldownManager = self:GetChecked() and true or false
+        LayoutIcons(f)
+    end)
+    view.nativeCooldownCheck:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Use Blizzard Cooldown Manager", 1, 1, 1)
+        GameTooltip:AddLine("Hides this addon's cooldown icons. Choose spells with /cdm and position Blizzard's bars in Edit Mode. Resource bars and proc alerts stay here.", nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    view.nativeCooldownCheck:SetScript("OnLeave", GameTooltip_Hide)
 
     view.procEnabledCheck = AddCheck("Show proc alerts", function(self)
         CRFProcAlerts_SetEnabled(self:GetChecked())
@@ -1498,6 +1512,7 @@ function CRFClass_RefreshOptions(f)
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
         end
+        if view.nativeCooldownCheck then view.nativeCooldownCheck:SetChecked(db.useBlizzardCooldownManager and true or false) end
         if view.healthCheck then view.healthCheck:SetChecked(db.healthShown and true or false) end
         if view.buffsCheck then view.buffsCheck:SetChecked(not db.buffsHidden) end
         if view.orderRows then
