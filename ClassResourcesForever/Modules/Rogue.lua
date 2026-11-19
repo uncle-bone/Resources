@@ -720,6 +720,7 @@ RR.defaults = {
     energyHidden  = false, -- hide the energy bar
     cpHidden      = false, -- hide the combo-point bar
     healthShown   = false, -- show the (optional) health bar
+    useBlizzardCooldownManager = false, -- use Blizzard's Cooldown Manager instead of this addon's cooldown row
     cooldownsHidden = false, -- hide the whole cooldown icon row
     barOrder      = { "cp", "energy", "health" },   -- bar stacking order, top to bottom
     combatOnly    = false, -- show the bars + icons only while in combat
@@ -1201,7 +1202,7 @@ end
 -- layout and option changes.
 local function LayoutIcons(f)
     for _, o in ipairs(f.icons) do o:Hide() end
-    if RogueResourcesDB.cooldownsHidden then return end
+    if RogueResourcesDB.cooldownsHidden or RogueResourcesDB.useBlizzardCooldownManager then return end
     local lay = RogueResourcesDB.layout
 
     if not lay then
@@ -1532,6 +1533,18 @@ local function PopulateOptions(f, body)
         LayoutIcons(f)
     end)
 
+    view.nativeCooldownCheck = AddCheck("Use Blizzard Cooldown Manager", function(self)
+        RogueResourcesDB.useBlizzardCooldownManager = self:GetChecked() and true or false
+        LayoutIcons(f)
+    end)
+    view.nativeCooldownCheck:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Use Blizzard Cooldown Manager", 1, 1, 1)
+        GameTooltip:AddLine("Hides this addon's cooldown icons. Choose spells with /cdm and position Blizzard's bars in Edit Mode. Resource bars and proc alerts stay here.", nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    view.nativeCooldownCheck:SetScript("OnLeave", GameTooltip_Hide)
+
     view.procEnabledCheck = AddCheck("Show proc alerts", function(self)
         CRFProcAlerts_SetEnabled(self:GetChecked())
     end)
@@ -1842,6 +1855,7 @@ function CRFRogue_RefreshOptions(f)
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
         end
+        if view.nativeCooldownCheck then view.nativeCooldownCheck:SetChecked(RogueResourcesDB.useBlizzardCooldownManager and true or false) end
         if view.healthCheck then view.healthCheck:SetChecked(RogueResourcesDB.healthShown and true or false) end
         if view.cooldownsCheck then view.cooldownsCheck:SetChecked(not RogueResourcesDB.cooldownsHidden) end
         if view.orderRows then
