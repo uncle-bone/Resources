@@ -1221,8 +1221,16 @@ local function PopulateOptions(f, body)
     view.procEnabledCheck = AddCheck("Show proc alerts", function(self)
         CRFProcAlerts_SetEnabled(self:GetChecked())
     end)
+    view.moveTogetherCheck = AddCheck("Move everything together", function(self)
+        db.moveTogether = self:GetChecked() and true or false
+        if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(db.moveTogether) end
+        CRFClass_SetLocked(f, db.locked)
+    end)
     view.procMoveCheck = AddCheck("Unlock proc icons to move", function(self)
+        if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(false) end
         CRFProcAlerts_SetUnlocked(self:GetChecked())
+        db.moveTogether = false
+        CRFClass_SetLocked(f, db.locked)
     end)
 
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
@@ -1508,6 +1516,7 @@ function CRFClass_RefreshOptions(f)
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procEnabledCheck:SetChecked(not procDB or procDB.enabled ~= false)
         end
+        if view.moveTogetherCheck then view.moveTogetherCheck:SetChecked(db.moveTogether and true or false) end
         if view.procMoveCheck then
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
@@ -2568,9 +2577,38 @@ local function BuildUI()
     f:SetClampedToScreen(true)
     f:EnableMouse(false)   -- only interactive while unlocked
     f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart", function(self) self:StartMoving() end)
+    f:SetScript("OnDragStart", function(self)
+        if db.moveTogether then
+            self._moveTogetherStartX, self._moveTogetherStartY = self:GetCenter()
+            self._moveTogetherPositions = {}
+            local members = { f.ccFrame, f.buffFrame, f.wellFed } }
+            for _, member in ipairs(members) do
+                if member then
+                    local p, rel, rp, x, y = member:GetPoint()
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y }
+                end
+            end
+            if CRFProcAlerts_GetFrame then
+                local member = CRFProcAlerts_GetFrame()
+                if member then
+                    local p, rel, rp, x, y = member:GetPoint()
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y, proc = true }
+                end
+            end
+        end
+        self:StartMoving()
+    end)
     f:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
+        if db.moveTogether and self._moveTogetherStartX then
+            local cx, cy = self:GetCenter(); local dx, dy = cx - self._moveTogetherStartX, cy - self._moveTogetherStartY
+            for _, item in ipairs(self._moveTogetherPositions or {}) do
+                local m = item.frame
+                m:ClearAllPoints(); m:SetPoint(item.p or "CENTER", item.rel or UIParent, item.rp or item.p or "CENTER", (item.x or 0) + dx, (item.y or 0) + dy)
+                if item.proc and CRFProcAlerts_SavePosition then CRFProcAlerts_SavePosition() end
+            end
+            self._moveTogetherStartX, self._moveTogetherStartY, self._moveTogetherPositions = nil, nil, nil
+        end
         PinBottom(self)   -- saved by its bottom edge (see PinBottom)
         local pos = db.position
         print(("|cff00ff88ClassResourcesForever:|r position saved (%d, %d)."):format(pos.x or 0, pos.y or 0))
@@ -2720,7 +2758,7 @@ local function BuildUI()
         cf:SetClampedToScreen(true)
         cf:EnableMouse(false)   -- only interactive while unlocked
         cf:RegisterForDrag("LeftButton")
-        cf:SetScript("OnDragStart", function(self) self:StartMoving() end)
+        cf:SetScript("OnDragStart", function(self) if not db.moveTogether then self:StartMoving() end end)
         cf:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
             local p, _, rp, x, y = self:GetPoint()
@@ -3232,7 +3270,7 @@ function CRFClass_BuildBuffFrame(f)
         -- Left-drag the pair to move it while unlocked (out of combat).
         b:RegisterForDrag("LeftButton")
         b:SetScript("OnDragStart", function()
-            if not db.locked and not InCombatLockdown() then bf:StartMoving() end
+            if not db.locked and not db.moveTogether and not InCombatLockdown() then bf:StartMoving() end
         end)
         b:SetScript("OnDragStop", function()
             bf:StopMovingOrSizing()
