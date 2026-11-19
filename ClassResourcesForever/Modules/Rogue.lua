@@ -3980,6 +3980,7 @@ function CRFRogue_SetLocked(f, locked)   -- forward-declared above (options Lock
     RogueResourcesDB.locked = locked
     -- Proc alerts share the main tracker's lock and move controls.
     if CRFProcAlerts_SetUnlocked then CRFProcAlerts_SetUnlocked(not locked) end
+    if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(RogueResourcesDB.moveTogether) end
     f:EnableMouse(not locked)
     -- Icons take the mouse while unlocked (dragging one moves the tracker); locked, clicks
     -- pass straight through them.
