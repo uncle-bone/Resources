@@ -1241,14 +1241,14 @@ local function PopulateOptions(f, body)
         CRFProcAlerts_SetEnabled(self:GetChecked())
     end)
     view.moveTogetherCheck = AddCheck("Move everything together", function(self)
-        db.moveTogether = self:GetChecked() and true or false
-        if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(db.moveTogether) end
+        DruidResourcesDB.moveTogether = self:GetChecked() and true or false
+        if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(DruidResourcesDB.moveTogether) end
         CRFClass_SetLocked(f, db.locked)
     end)
     view.procMoveCheck = AddCheck("Unlock proc icons to move", function(self)
         if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(false) end
         CRFProcAlerts_SetUnlocked(self:GetChecked())
-        db.moveTogether = false
+        DruidResourcesDB.moveTogether = false
     end)
 
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
@@ -1533,7 +1533,7 @@ function CRFDruid_RefreshOptions(f)
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procEnabledCheck:SetChecked(not procDB or procDB.enabled ~= false)
         end
-        if view.moveTogetherCheck then view.moveTogetherCheck:SetChecked(db.moveTogether and true or false) end
+        if view.moveTogetherCheck then view.moveTogetherCheck:SetChecked(DruidResourcesDB.moveTogether and true or false) end
         if view.procMoveCheck then
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
@@ -2595,7 +2595,7 @@ local function BuildUI()
     f:EnableMouse(false)   -- only interactive while unlocked
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", function(self)
-        if db.moveTogether then
+        if DruidResourcesDB.moveTogether then
             self._moveTogetherStartX, self._moveTogetherStartY = self:GetCenter()
             self._moveTogetherPositions = {}
             local members = { f.ccFrame, f.buffFrame, f.wellFed }
@@ -2606,9 +2606,9 @@ local function BuildUI()
                     self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = target, p = p, rel = rel, rp = rp, x = x, y = y, save = function()
                         local q, _, qr, qx, qy = target:GetPoint()
                         if q then
-                            if target == f.ccFrame then db.ccPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
-                            elseif target == f.buffFrame then db.buffPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
-                            elseif target == f.wellFed then db.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
+                            if target == f.ccFrame then DruidResourcesDB.ccPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif target == f.buffFrame then DruidResourcesDB.buffPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif target == f.wellFed then DruidResourcesDB.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
                         end
                     end }
                 end
@@ -3116,14 +3116,14 @@ end
 function CRFDruid_PlaceClearcasting(f)   -- forward-declared above (lock / reset)
     local o, cf, db = f.ccIcon, f.ccFrame, DruidResourcesDB
     if not (o and cf) then return end
-    if not db.ccPos then
+    if not DruidResourcesDB.ccPos then
         -- Start just above the bars (both frames share the UI scale).
         local x, top = f:GetCenter(), f:GetTop()
         if x and top then
-            db.ccPos = { point = "CENTER", relativePoint = "BOTTOMLEFT", x = x, y = top + 8 + ICON_SIZE / 2 }
+            DruidResourcesDB.ccPos = { point = "CENTER", relativePoint = "BOTTOMLEFT", x = x, y = top + 8 + ICON_SIZE / 2 }
         end
     end
-    local pos = db.ccPos or { point = "CENTER", relativePoint = "CENTER", x = 0, y = -100 }
+    local pos = DruidResourcesDB.ccPos or { point = "CENTER", relativePoint = "CENTER", x = 0, y = -100 }
     cf:ClearAllPoints()
     cf:SetPoint(pos.point, UIParent, pos.relativePoint, pos.x, pos.y)
     cf:EnableMouse(not db.locked)
@@ -3404,7 +3404,7 @@ end
 function CRFDruid_BuildWellFed(f)
     local w = CreateFrame("Frame", nil, UIParent)
     w:SetSize(400, 70)
-    local wp = db.wellFedPos
+    local wp = DruidResourcesDB.wellFedPos
     if wp then w:SetPoint(wp.point or "TOP", UIParent, wp.relativePoint or "TOP", wp.x or 0, wp.y or -150)
     else w:SetPoint("TOP", UIParent, "TOP", 0, -150) end
     w:SetFrameStrata("HIGH")
