@@ -2603,7 +2603,14 @@ local function BuildUI()
             for _, member in ipairs(members) do
                 if member then
                     local p, rel, rp, x, y = member:GetPoint()
-                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y }
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y, save = function()
+                        local q, _, qr, qx, qy = member:GetPoint()
+                        if q then
+                            if member == f.ccFrame then db.ccPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif member == f.buffFrame then db.buffPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif member == f.wellFed then db.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
+                        end
+                    end }
                 end
             end
             if CRFProcAlerts_GetFrame then
@@ -3397,7 +3404,9 @@ end
 function CRFDruid_BuildWellFed(f)
     local w = CreateFrame("Frame", nil, UIParent)
     w:SetSize(400, 70)
-    w:SetPoint("TOP", UIParent, "TOP", 0, -150)
+    local wp = db.wellFedPos
+    if wp then w:SetPoint(wp.point or "TOP", UIParent, wp.relativePoint or "TOP", wp.x or 0, wp.y or -150)
+    else w:SetPoint("TOP", UIParent, "TOP", 0, -150) end
     w:SetFrameStrata("HIGH")
     w.text = w:CreateFontString(nil, "OVERLAY")
     w.text:SetFont("Fonts\\FRIZQT__.TTF", 26, "THICKOUTLINE")
