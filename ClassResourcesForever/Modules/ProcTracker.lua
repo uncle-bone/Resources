@@ -160,7 +160,7 @@ ev:SetScript("OnEvent", function(_, event, unit)
         EnsureDB()
         frame = CreateFrame("Frame", "ClassResourcesForeverProcAlerts", UIParent)
         frame:SetSize(SIZE, SIZE)
-        frame:SetFrameStrata("HIGH")
+        frame:SetFrameStrata("MEDIUM")
         frame:SetMovable(true)
         frame:SetClampedToScreen(true)
         local pos = db.position
