@@ -2872,7 +2872,7 @@ local function BuildUI()
     f:EnableMouse(false)   -- only interactive while unlocked
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", function(self)
-        if db.moveTogether then
+        if RogueResourcesDB.moveTogether then
             self._moveTogetherStartX, self._moveTogetherStartY = self:GetCenter()
             self._moveTogetherPositions = {}
             local members = { f.poisonFrame, f.ripFrame, f.wellFed }
