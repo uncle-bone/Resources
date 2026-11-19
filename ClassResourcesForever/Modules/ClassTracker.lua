@@ -1230,7 +1230,6 @@ local function PopulateOptions(f, body)
         if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(false) end
         CRFProcAlerts_SetUnlocked(self:GetChecked())
         db.moveTogether = false
-        CRFClass_SetLocked(f, db.locked)
     end)
 
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
@@ -2584,13 +2583,14 @@ local function BuildUI()
             local members = { f.ccFrame, f.buffFrame, f.wellFed }
             for _, member in ipairs(members) do
                 if member then
-                    local p, rel, rp, x, y = member:GetPoint()
-                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y, save = function()
-                        local q, _, qr, qx, qy = member:GetPoint()
+                    local target = member
+                    local p, rel, rp, x, y = target:GetPoint()
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = target, p = p, rel = rel, rp = rp, x = x, y = y, save = function()
+                        local q, _, qr, qx, qy = target:GetPoint()
                         if q then
-                            if member == f.ccFrame then db.ccPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
-                            elseif member == f.buffFrame then db.buffPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
-                            elseif member == f.wellFed then db.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
+                            if target == f.ccFrame then db.ccPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif target == f.buffFrame then db.buffPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif target == f.wellFed then db.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
                         end
                     end }
                 end
