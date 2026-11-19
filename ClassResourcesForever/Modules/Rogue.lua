@@ -1557,7 +1557,6 @@ local function PopulateOptions(f, body)
         if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(false) end
         CRFProcAlerts_SetUnlocked(self:GetChecked())
         RogueResourcesDB.moveTogether = false
-        CRFRogue_SetLocked(f, RogueResourcesDB.locked)
     end)
 
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
@@ -2879,13 +2878,14 @@ local function BuildUI()
             local members = { f.poisonFrame, f.ripFrame, f.wellFed }
             for _, member in ipairs(members) do
                 if member then
-                    local p, rel, rp, x, y = member:GetPoint()
-                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y, save = function()
-                        local q, _, qr, qx, qy = member:GetPoint()
+                    local target = member
+                    local p, rel, rp, x, y = target:GetPoint()
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = target, p = p, rel = rel, rp = rp, x = x, y = y, save = function()
+                        local q, _, qr, qx, qy = target:GetPoint()
                         if q then
-                            if member == f.poisonFrame then RogueResourcesDB.poisonPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
-                            elseif member == f.ripFrame then RogueResourcesDB.ripPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
-                            elseif member == f.wellFed then RogueResourcesDB.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
+                            if target == f.poisonFrame then RogueResourcesDB.poisonPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif target == f.ripFrame then RogueResourcesDB.ripPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 }
+                            elseif target == f.wellFed then RogueResourcesDB.wellFedPos = { point=q, relativePoint=qr or q, x=qx or 0, y=qy or 0 } end
                         end
                     end }
                 end
