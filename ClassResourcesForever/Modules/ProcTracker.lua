@@ -138,6 +138,12 @@ local function EnsureDB()
     if db.enabled == nil then db.enabled = true end
 end
 
+function CRFProcAlerts_GetFrame() return frame end
+function CRFProcAlerts_SavePosition()
+    if not (frame and db) then return end
+    local point, _, relativePoint, x, y = frame:GetPoint()
+    if point then db.position = { point = point, relativePoint = relativePoint or point, x = x or 0, y = y or 0 } end
+end
 function CRFProcAlerts_SetGrouped(grouped)
     groupMove = grouped and true or false
     if frame then
