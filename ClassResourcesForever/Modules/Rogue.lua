@@ -1548,8 +1548,16 @@ local function PopulateOptions(f, body)
     view.procEnabledCheck = AddCheck("Show proc alerts", function(self)
         CRFProcAlerts_SetEnabled(self:GetChecked())
     end)
+    view.moveTogetherCheck = AddCheck("Move everything together", function(self)
+        RogueResourcesDB.moveTogether = self:GetChecked() and true or false
+        if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(RogueResourcesDB.moveTogether) end
+        CRFRogue_SetLocked(f, RogueResourcesDB.locked)
+    end)
     view.procMoveCheck = AddCheck("Unlock proc icons to move", function(self)
+        if CRFProcAlerts_SetGrouped then CRFProcAlerts_SetGrouped(false) end
         CRFProcAlerts_SetUnlocked(self:GetChecked())
+        RogueResourcesDB.moveTogether = false
+        CRFRogue_SetLocked(f, RogueResourcesDB.locked)
     end)
 
     -- Bar order: press a row and move the mouse up or down; the bar swaps places with
@@ -1851,6 +1859,7 @@ function CRFRogue_RefreshOptions(f)
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procEnabledCheck:SetChecked(not procDB or procDB.enabled ~= false)
         end
+        if view.moveTogetherCheck then view.moveTogetherCheck:SetChecked(RogueResourcesDB.moveTogether and true or false) end
         if view.procMoveCheck then
             local procDB = ClassResourcesForeverDB and ClassResourcesForeverDB.procAlerts
             view.procMoveCheck:SetChecked(procDB and procDB.unlocked and true or false)
@@ -2863,7 +2872,27 @@ local function BuildUI()
     f:SetClampedToScreen(true)
     f:EnableMouse(false)   -- only interactive while unlocked
     f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart", function(self) self:StartMoving() end)
+    f:SetScript("OnDragStart", function(self)
+        if db.moveTogether then
+            self._moveTogetherStartX, self._moveTogetherStartY = self:GetCenter()
+            self._moveTogetherPositions = {}
+            local members = { f.ccFrame, f.buffFrame, f.wellFed }, f.poisonFrame, f.ripFrame }
+            for _, member in ipairs(members) do
+                if member then
+                    local p, rel, rp, x, y = member:GetPoint()
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y }
+                end
+            end
+            if CRFProcAlerts_GetFrame then
+                local member = CRFProcAlerts_GetFrame()
+                if member then
+                    local p, rel, rp, x, y = member:GetPoint()
+                    self._moveTogetherPositions[#self._moveTogetherPositions + 1] = { frame = member, p = p, rel = rel, rp = rp, x = x, y = y, proc = true }
+                end
+            end
+        end
+        self:StartMoving()
+    end)
     f:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         local p, _, rp, x, y = self:GetPoint()
@@ -3187,7 +3216,7 @@ local function BuildPoisonFrame(f)
         -- Left-drag the pair to move it while unlocked; left-click (armed only when
         -- locked) applies the poison.
         b:RegisterForDrag("LeftButton")
-        b:SetScript("OnDragStart", function() if not RogueResourcesDB.locked then pf:StartMoving() end end)
+        b:SetScript("OnDragStart", function() if not RogueResourcesDB.locked and not RogueResourcesDB.moveTogether then pf:StartMoving() end end)
         b:SetScript("OnDragStop", function()
             pf:StopMovingOrSizing()
             local p, _, rp, x, y = pf:GetPoint()
