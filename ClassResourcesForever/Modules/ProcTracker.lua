@@ -1,6 +1,8 @@
 -- ClassResourcesForever: compact, movable proc-aura alerts shared by all classes.
 local _, ns = ...
 local frame, db, icons = nil, nil, {}
+local groupMove = false
+local function IsGrouped() return groupMove end
 local SIZE, GAP = 32, 5
 local function Secret(v) return issecretvalue and issecretvalue(v) end
 local function Texture(id)
@@ -58,10 +60,10 @@ local function CreateIcon(parent, entry)
     end)
     b:SetScript("OnLeave", GameTooltip_Hide)
     b:SetScript("OnMouseDown", function(self, button)
-        if db and db.unlocked and button == "LeftButton" then parent:StartMoving() end
+        if db and db.unlocked and not IsGrouped() and button == "LeftButton" then parent:StartMoving() end
     end)
     b:SetScript("OnMouseUp", function(self, button)
-        if db and db.unlocked and button == "LeftButton" then
+        if db and db.unlocked and not IsGrouped() and button == "LeftButton" then
             parent:StopMovingOrSizing()
             local point, _, relativePoint, x, y = parent:GetPoint()
             db.position = { point = point, relativePoint = relativePoint, x = x, y = y }
@@ -136,6 +138,13 @@ local function EnsureDB()
     if db.enabled == nil then db.enabled = true end
 end
 
+function CRFProcAlerts_SetGrouped(grouped)
+    groupMove = grouped and true or false
+    if frame then
+        frame:EnableMouse(db and db.unlocked and not groupMove)
+        if groupMove then frame:SetScript("OnDragStart", nil); frame:SetScript("OnDragStop", nil) end
+    end
+end
 function CRFProcAlerts_SetEnabled(enabled)
     EnsureDB()
     db.enabled = enabled and true or false
@@ -171,6 +180,7 @@ ev:SetScript("OnEvent", function(_, event, unit)
         end
         for _, entry in ipairs(entries) do icons[#icons + 1] = CreateIcon(frame, entry) end
         SetUnlocked(db.unlocked)
+        if groupMove then frame:EnableMouse(false); frame:SetScript("OnDragStart", nil); frame:SetScript("OnDragStop", nil) end
         Update()
     elseif frame then
         Update()
