@@ -3287,7 +3287,7 @@ end
 -- (as battlegrounds can). UNIT_SPELLCAST_SUCCEEDED is player-filtered by the event frame.
 function CRFDruid_BuffCastSucceeded(f, spellID)
     local bf = f.buffFrame
-    if not bf or not spellID then return end
+    if not bf or not spellID or IsSecretV(spellID) then return end
     for _, b in ipairs(bf.buttons) do
         if b.def.set[spellID] then
             b.clickedAt = nil
