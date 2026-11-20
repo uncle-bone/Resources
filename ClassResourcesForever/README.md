@@ -6,7 +6,7 @@ One class-aware addon for **World of Warcraft: Forever**. It selects a tracker f
 
 ## Trackers
 
-- **Druid:** the original DruidResources module, retained with form-aware bars, per-form cooldown layouts, Clearcasting/Omen of Clarity alert, buff tools, health, and custom spell/item tracking. Poised and Nature's Grace are included in the shared proc row.
+- **Druid:** the original DruidResources module, including successful-cast timers for Mark of the Wild and Thorns when battleground aura reads are unavailable, retained with form-aware bars, per-form cooldown layouts, Clearcasting/Omen of Clarity alert, buff tools, health, and custom spell/item tracking. Poised and Nature's Grace are included in the shared proc row.
 - **Rogue:** the original RogueResources module, retained with combo-point and energy bars, cooldown layout, Riposte alert, Slice and Dice, poison tools, health, and custom tracking. Poised is included in the shared proc row.
 - **Warrior, Paladin, Hunter, Priest, Shaman, Mage, and Warlock:** a repurposed copy of the DruidResources tracker. It uses the same bar UI, settings, movable frame, health display, cooldown icons, custom cooldown layout editor, custom spell/item tracking, and optional warnings. Class cooldown entries come from ClassData.lua. Hunter can track pet focus; Warlock counts Soul Shards.
 - **Move everything together:** enable this in the class options, unlock the tracker, then drag the main bars or cooldown row. The proc row and detached class alerts move the same distance and save their updated positions. Turn the option off to place components separately.
