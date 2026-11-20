@@ -3283,14 +3283,15 @@ function CRFDruid_BuildBuffFrame(f)
     return bf
 end
 
--- A buff was cast. In combat the buff can't be read, so if it came from our icon (a
--- self-cast), start its timer from now. Out of combat the next read covers it.
+-- Track successful self-casts even when an instance hides the player's aura list
+-- (as battlegrounds can). UNIT_SPELLCAST_SUCCEEDED is player-filtered by the event frame.
 function CRFDruid_BuffCastSucceeded(f, spellID)
     local bf = f.buffFrame
-    if not bf or not InCombatLockdown() then return end
+    if not bf or not spellID then return end
     for _, b in ipairs(bf.buttons) do
-        if b.def.set[spellID] and b.clickedAt and GetTime() - b.clickedAt < 2 then
+        if b.def.set[spellID] then
             b.clickedAt = nil
+            b.known = true
             b.expiry = GetTime() + (b.realDur or b.def.dur)
             RefreshBuffIcon(b)
         end
